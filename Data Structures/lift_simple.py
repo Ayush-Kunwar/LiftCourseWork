@@ -37,14 +37,14 @@ class Lift:
     def add_person(self, *people_add: Person):
         for person in people_add:
             self.people.append(person)
-            self.capacity -= 1
+            self.current_capacity -= 1
     
     def remove_person(self, *people_remove: Person):
         for x in self.people:
             for person in people_remove:
                 if x == person:
                     self.people.remove(person)
-                    self.capacity += 1
+                    self.current_capacity += 1
 
     def get_current_floor(self) -> int:
         return self.current_floor
