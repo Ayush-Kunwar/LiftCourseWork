@@ -14,6 +14,7 @@ def fileHandling(filename = "data.txt"):
         txt = txt.strip("\n")
         requests = [int(s) for s in txt.split() if s.isdigit()]
         building.append(requests)
+    return building, capcity, floors
 
 if __name__ == "__main__":
     fileHandling()
