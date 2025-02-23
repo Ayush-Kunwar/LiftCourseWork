@@ -42,9 +42,13 @@ class Lift:
     
     def unload(self):
 
-        for person in (self.content): #check everyone in the lift
-            if person.destination == self.currentFloor: #check if the current floor is their destination
-                self.content.remove(person) #remove them from the lift 
+        #for person in (self.content): #check everyone in the lift
+            #if person.destination == self.currentFloor: #check if the current floor is their destination
+                #self.content.remove(person) #remove them from the lift 
+        
+        self.content = [person for person in self.content if person.destination != self.currentFloor] # updated unload function as
+        # old function had risks arising from iterating over and removing variables from a list.
+
 
 def loadPersons(requests): #convert the list of requests into individual objects
     requestsAsClass = []
@@ -59,14 +63,14 @@ def checkDirection(currentDirection, currentFloor, maxFloor): #check if we have 
         if currentFloor < maxFloor: #if we are going right (up)
             currentFloor += 1
         else: #if we are at the max floor start going left
-            currentFloor -= 1
             currentDirection = "left"
+            currentFloor -= 1
     elif currentDirection == "left":
         if currentFloor > 1: #if we are going left (down)
             currentFloor -= 1
         else: #if we are at the bottom floor
-            currentFloor += 1
             currentDirection = "right"
+            currentFloor += 1
     return currentDirection, currentFloor
 
 
@@ -87,6 +91,9 @@ def SCAN(lift, persons, maxFloor):
     while len(persons) > 0 or len(lift.content) > 0:  # Continue until no people are waiting or in the lift
         lift.unload() #unload lift
         persons = lift.load(persons)#load the lift
+        if len(lift.content) == previous_count and not persons:  # No change means we are done
+            break
+        
         print(f"Lift is at floor {lift.currentFloor}, content: {[person.destination for person in lift.content]}")
         direction, floor = checkDirection(direction, floor, maxFloor) #check if we are still moving same direction
         lift.currentFloor = floor #update lifts current floor
