@@ -87,17 +87,22 @@ def SCAN(lift, persons, maxFloor):
             increase floor by 1
 
     '''
-    direction = "right" #default direction
-    floor = 1 #default floor
-    while len(persons) > 0 or len(lift.content) > 0:  # Continue until no people are waiting or in the lift
-        lift.unload() #unload lift
-        persons = lift.load(persons)#load the lift
-        if len(lift.content) == previous_count and not persons:  # No change means we are done
+    direction = "right"  # Default direction
+    floor = 1  # Default floor
+    previous_count = -1  # Track previous lift occupancy
+
+    while len(persons) > 0 or len(lift.content) > 0:  # Continue until lift is empty and no one is waiting
+        lift.unload()  # Unload passengers who reached their destination
+        persons = lift.load(persons)  # Load new passengers
+
+        if len(lift.content) == previous_count and not persons:  # If no changes, end loop
             break
-        
+        previous_count = len(lift.content)  # Update previous count
+
         print(f"Lift is at floor {lift.currentFloor}, content: {[person.destination for person in lift.content]}")
-        direction, floor = checkDirection(direction, floor, maxFloor) #check if we are still moving same direction
-        lift.currentFloor = floor #update lifts current floor
+        direction, floor = checkDirection(direction, floor, maxFloor)  # Update direction
+        lift.currentFloor = floor  # Move lift
+
     print("Lift is Empty and no more people waiting")
 
 def main():
