@@ -186,7 +186,7 @@ class Lift:
                 self.currentFloor -= 1
 
     def int_peopleLift(self):
-        """Reprents the people in the lift as their destination floor"""
+        """Represents the people in the lift as their destination floor in an array"""
         numPeople = []
         for person in self.peopleLift:
             numPeople.append(person.get_end_floor())
