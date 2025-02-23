@@ -2,7 +2,7 @@ import re
 
 is_numeric = lambda s: bool(re.fullmatch(r'\d+', s))
 
-def fileHandle(filename):
+def fileHandling(filename):
     try:
         data = open(filename, "r") #open the text file
         lines = data.readlines()
