@@ -13,6 +13,7 @@ class Person:
             return "up"
     
     def get_direction(self) -> str:
+        """Returns the direction the person is travelling in"""
         return self.direction
     
     def get_end_floor(self) -> int:
@@ -21,7 +22,6 @@ class Person:
     
     def __repr__(self) -> str:
         """Returns a string representation of the Person object"""
-        #return f"Person(startFloor={self.startFloor}, endFloor={self.endFloor}, direction={self.direction})"
         return f"{self.endFloor}"
 
 
@@ -140,20 +140,17 @@ class Lift:
 
     def __repr__(self) -> str:
         """Returns a string representation of the Lift object"""
-        #return (f"Lift(currentFloor={self.currentFloor}, direction={self.direction}, "
-        #        f"capacity={self.capacity}, numberOfPeople={self.numberOfPeople}, "
-        #        f"bottomFloor={self.bottomFloor}, topFloor={self.topFloor})")  
         return (f"\nLift {self.liftNumber} Information"
                 f"\nDirection: {self.direction} || Current Floor: {self.currentFloor}"
                 f"\nPeople in Lift: {self.int_peopleLift()} || {self.numberOfPeople}/{self.capacity}" 
                 f"\nOperating Floors: {self.bottomFloor}-{self.topFloor}")
      
-def print_requests(): ###change and remove
+def print_requests():
     for x in range(len(requests)):
         print("Floor:", (x+1))
         print(requests[x])
 
-def main(): ###change
+def main():
     capacity = fileHandling(filename)[1]
     floors = fileHandling(filename)[2]
     lift = Lift(liftNumber=1,topFloor=floors,capacity=capacity)
@@ -168,6 +165,7 @@ def main(): ###change
         print_requests()
         print(lift)
         numof = input("")
+        
         if ((lift.get_number_of_people() == 0 and not lift.checkAhead()) or lift.checkEnd()):
             switch = True
 
