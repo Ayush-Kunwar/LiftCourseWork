@@ -70,7 +70,8 @@ def checkDirection(currentDirection, currentFloor, maxFloor): #check if we have 
             currentFloor -= 1
         else: #if we are at the bottom floor
             currentDirection = "right"
-            currentFloor += 1
+            currentFloor += 1 #fix: ensure the lift moves up a floor after changing direction
+            
     return currentDirection, currentFloor
 
 
