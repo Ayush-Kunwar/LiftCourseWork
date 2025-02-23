@@ -152,10 +152,12 @@ class Lift:
                 for person in requests[self.currentFloor - 1]: #Checks if there are any requests to go down from Top
                     if person.get_direction() == "down":
                         return False
+                        
             elif self.checkBottom():
                 for person in requests[self.currentFloor - 1]: #Checks if there are any requests to go up from Bottom
                     if person.get_direction() == "up":
                         return False
+                        
         else:
             if requests[self.currentFloor - 1]: #Checks if there are any people on curretn floor (not top or bottom)
                 return False
@@ -256,7 +258,7 @@ def look():
                     print_requests()
                     print(lift)
                     pause = input("\nPress Enter to continue.\n")
-                
+
                 if ((lift.get_number_of_people() == 0 and not lift.checkAhead()) or lift.checkEnd()):
                     switch = True
 
@@ -274,19 +276,23 @@ def look():
                 print_requests()
                 print(lift)
                 pause = input("\nPress Enter to continue.\n")
+                
             else:
                 pause = ""
                 print(f"\nLift {lift.get_liftNumber()} has no requests.\n")
                 pause = input("\nType 'b' to See All Requests.\nPress Enter to continue.\n")
                 if pause.lower() == "b":
                     print_requests()
+                    
             print("----------------------------------------")
+            
             numofrequests = 0
             for lift in lifts:
                 numofrequests += lift.get_number_of_people()
-            
             for x in requests:
                 numofrequests += len(x)
+                
     print("\nSimulation Finished\n")
+    
 if __name__ == "__main__":
     look()
