@@ -287,6 +287,6 @@ def look():
             
             for x in requests:
                 numofrequests += len(x)
-    print("\nSimulation Finished")
+    print("\nSimulation Finished\n")
 if __name__ == "__main__":
     look()
