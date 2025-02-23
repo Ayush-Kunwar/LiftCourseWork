@@ -22,7 +22,7 @@ class Person:
     
     def __repr__(self) -> str:
         """Returns a string representation of the Person object"""
-        return f"{self.endFloor}"
+        return f"{self.endFloor} || {self.direction}"
 
 
 def loadRequests(filename = "data.txt"): #convert the list of requests into individual objects
@@ -36,7 +36,7 @@ def loadRequests(filename = "data.txt"): #convert the list of requests into indi
         requestsAsClass.append(floor)
     return requestsAsClass
 
-filename = "input3.txt"
+filename = "input2.txt"
 requests = loadRequests(filename)
 
 class Lift:
@@ -72,6 +72,7 @@ class Lift:
     def add_person(self):
         """Adds people to the lift"""
         removingPeople = []
+    
         for person in requests[self.currentFloor - 1]:
             #if lift is not full and the person is traving in the same direction as the lift
             if not self.check_if_full() and person.get_direction() == self.direction: 
@@ -82,13 +83,33 @@ class Lift:
                     self.numberOfPeople += 1
         for person in removingPeople:
             requests[self.currentFloor - 1].remove(person)
+        
+        #for loop above prorities people who would only take one lift to get to there destination
+        removingPeople = []
+
+        for person in requests[self.currentFloor - 1]:
+            if not self.check_if_full() and person.get_direction() == self.direction: 
+                self.peopleLift.append(person)
+                removingPeople.append(person)
+                self.numberOfPeople += 1
+
+        for person in removingPeople:
+            requests[self.currentFloor - 1].remove(person)
 
     def remove_people(self):
         """Remove people if they are at thier destination floor"""
+        addingRequest = []
         for person in self.peopleLift:
             if person.get_end_floor() == self.currentFloor:
-                self.peopleLift.remove(person)
+                addingRequest.append(person)
                 self.numberOfPeople -= 1
+            elif self.checkEnd():
+                addingRequest.append(person)
+                requests[self.currentFloor - 1].append(person)
+                self.numberOfPeople -= 1
+        
+        for person in addingRequest:
+            self.peopleLift.remove(person)
 
     def get_current_floor(self) -> int:
         """Returns current floor of the lift"""
@@ -102,7 +123,7 @@ class Lift:
             self.direction = "up"
     
     def checkAhead(self) -> bool: 
-        """Check if there are valid requests ahead in the current direction."""
+        """Check if there are valid requests ahead in the current direction"""
         if self.direction == "up":
             for x in range(self.currentFloor + 1, self.topFloor):
                 if requests[x - 1]:
@@ -114,12 +135,45 @@ class Lift:
                     return True
             return False
     
-    def checkEnd(self) -> bool:
-        """Checks if lift is at the top or bottom floor"""
+    def checkNoRequests(self) -> bool:
+        """Checks if there no people/requests for the lift to respond to"""
+        if self.numberOfPeople != 0:
+            return False
+        
+        for x in range(self.currentFloor + 1, self.topFloor): #Checks if they are any requests above the lift
+            if requests[x - 1]:
+                return False
+        for x in range(self.currentFloor - 1, self.bottomFloor, -1): #Checks if they are any requests below the lift
+            if requests[x - 1]:
+                return False
+            
+        if self.checkEnd(): #Checks if lift is at the bottom or top
+            if self.checkTop(): 
+                for person in requests[self.currentFloor - 1]: #Checks if there are any requests to go down from Top
+                    if person.get_direction() == "down":
+                        return False
+            elif self.checkBottom():
+                for person in requests[self.currentFloor - 1]: #Checks if there are any requests to go up from Bottom
+                    if person.get_direction() == "up":
+                        return False
+        else:
+            if requests[self.currentFloor - 1]: #Checks if there are any people on curretn floor (not top or bottom)
+                return False
+        return True
+
+    def checkTop(self) -> bool:
+        """Checks if lift is at the top floor"""
         if self.direction == "up":
             return self.currentFloor == self.topFloor
-        elif self.direction == "down":
+        
+    def checkBottom(self) -> bool:
+        """Checks if lift is at the bottom floor"""
+        if self.direction == "down":
             return self.currentFloor == self.bottomFloor
+        
+    def checkEnd(self) -> bool:
+        """Checks if lift is at the top or bottom floor"""
+        return self.checkTop() or self.checkBottom()
     
     def move_lift(self):
         """Moves lift by one floor"""
@@ -146,45 +200,93 @@ class Lift:
                 f"\nOperating Floors: {self.bottomFloor}-{self.topFloor}")
      
 def print_requests():
+    print("\nAll Requests")
     for x in range(len(requests)):
-        print("Floor:", (x+1))
+        print(f"Floor: {x + 1}")
         print(requests[x])
 
-def main():
+def lift_setup(numberOfLifts: int = 1):
+    lifts = []
     capacity = fileHandling(filename)[1]
     floors = fileHandling(filename)[2]
-    lift = Lift(liftNumber=1,topFloor=floors,capacity=capacity)
+    invalid = False
+    topfloor = None
+    bottomFloor = None
+
+    for x in range(1, numberOfLifts + 1):
+        topfloor = None
+        bottomFloor = None
+
+        while invalid or topfloor == None or bottomFloor >= topfloor:
+            invalid = False
+            topfloor = None
+            bottomFloor = None
+
+            bottomFloor= int(input(f"\nWhat is the bottom floor of Lift {x} (min: 1): "))
+            topfloor = int(input(f"What is the top floor of Lift {x} (max: {floors}): "))
+
+            if bottomFloor >= topfloor or topfloor > floors or bottomFloor < 1:
+                print("\nInputs are Invalid.\n")
+                invalid = True
+    
+        lift = Lift(liftNumber = x, topFloor = topfloor, capacity = capacity, bottomFloor = bottomFloor)
+        lifts.append(lift)
+
+    return lifts
+
+
+def look():
     numofrequests = 1
+    floors = fileHandling(filename)[2]
+    numberOfLifts = 0
+
+    while numberOfLifts < 1:
+        numberOfLifts = int(input(f"How many lifts would you like in your {floors} story building?\n"))
+    lifts = lift_setup(numberOfLifts = numberOfLifts)
 
     print_requests()
     while numofrequests != 0:
-        switch = False
-        
-        lift.add_person()
-        print(f"\nAdding People to Lift {lift.get_liftNumber()} ...\n")
-        print_requests()
-        print(lift)
-        numof = input("")
-        
-        if ((lift.get_number_of_people() == 0 and not lift.checkAhead()) or lift.checkEnd()):
-            switch = True
+        for lift in lifts:
+            if not lift.checkNoRequests():
+                switch = False
+                if not lift.checkEnd():
+                    """Adds people to the lift"""
+                    lift.add_person()
+                    print(f"\nAdding People to Lift {lift.get_liftNumber()} ...\n")
+                    print_requests()
+                    print(lift)
+                    pause = input("\nPress Enter to continue.\n")
+                
+                if ((lift.get_number_of_people() == 0 and not lift.checkAhead()) or lift.checkEnd()):
+                    switch = True
 
-        lift.move_lift()
-        if not switch:
-            print(f"\nMoving Lift {lift.get_liftNumber()} ...\n")
-        elif switch:
-            print(f"\nLift {lift.get_liftNumber()} now going {lift.get_direction()} ...\n")
-        print(lift)
+                """Moves the lift/Change direction of the lift"""
+                lift.move_lift()
+                if not switch:
+                    print(f"\nMoving Lift {lift.get_liftNumber()} ...\n")
+                elif switch:
+                    print(f"\nLift {lift.get_liftNumber()} now going {lift.get_direction()} ...\n")
+                print(lift)
 
-    
-        lift.remove_people()
-        print(f"\nRemoving People from Lift {lift.get_liftNumber()} ...\n")
-        print(lift)
-        numof = input("")
-
-        numofrequests = 0 + lift.get_number_of_people()
-        for x in requests:
-            numofrequests += len(x)
-
+                """Removes people from the lift"""
+                lift.remove_people()
+                print(f"\nRemoving People from Lift {lift.get_liftNumber()} ...\n")
+                print_requests()
+                print(lift)
+                pause = input("\nPress Enter to continue.\n")
+            else:
+                pause = ""
+                print(f"\nLift {lift.get_liftNumber()} has no requests.\n")
+                pause = input("\nType 'b' to See All Requests.\nPress Enter to continue.\n")
+                if pause.lower() == "b":
+                    print_requests()
+            print("----------------------------------------")
+            numofrequests = 0
+            for lift in lifts:
+                numofrequests += lift.get_number_of_people()
+            
+            for x in requests:
+                numofrequests += len(x)
+    print("\nSimulation Finished")
 if __name__ == "__main__":
-    main()
+    look()
