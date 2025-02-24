@@ -294,14 +294,14 @@ def look():
                 pause = input("\nType 'b' to See All Requests.\nType 'l' to See All Lift Information.\nType 'e' to Exit.\nPress Enter to continue.\n")
                 if pause.lower() == "b":
                     print_requests()
-                if pause.lower() == "l":
+                    pause = input("\nPress Enter to continue.\n")
+                elif pause.lower() == "l":
                     for lift in lifts:
                         print(lift)
-                if pause.lower() == "e":
-                    exit = True
-                else:
                     pause = input("\nPress Enter to continue.\n")
-
+                elif pause.lower() == "e":
+                    exit = True
+                    
             print("\n----------------------------------------\n")
 
             numofrequests = 0
