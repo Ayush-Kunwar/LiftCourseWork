@@ -36,7 +36,7 @@ def loadRequests(filename = "data.txt"): #convert the list of requests into indi
         requestsAsClass.append(floor)
     return requestsAsClass
 
-filename = "input2.txt"
+filename = "input3.txt"
 requests = loadRequests(filename)
 
 class Lift:
@@ -261,6 +261,7 @@ def look():
                     if pause.lower() == "l":
                         for lift in lifts:
                             print(lift)
+                        pause = input("\nPress Enter to continue.\n")
                 
                 if ((lift.get_number_of_people() == 0 and not lift.checkAhead()) or lift.checkEnd()):
                     switch = True
@@ -282,6 +283,7 @@ def look():
                 if pause.lower() == "l":
                     for lift in lifts:
                         print(lift)
+                    pause = input("\nPress Enter to continue.\n")
             else:
                 pause = ""
                 print(f"\nLift {lift.get_liftNumber()} has no requests.\n")
@@ -291,6 +293,7 @@ def look():
                 if pause.lower() == "l":
                     for lift in lifts:
                         print(lift)
+                pause = input("\nPress Enter to continue.\n")
 
             print("\n----------------------------------------\n")
 
