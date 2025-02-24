@@ -36,7 +36,7 @@ def loadRequests(filename = "data.txt"): #convert the list of requests into indi
         requestsAsClass.append(floor)
     return requestsAsClass
 
-filename = "input3.txt"
+filename = "input3.txt" ##change filename to change data
 requests = loadRequests(filename)
 
 class Lift:
@@ -238,16 +238,20 @@ def lift_setup(numberOfLifts: int = 1):
 
 
 def look():
+    global requests, filename
+    requests = loadRequests(filename)
     numofrequests = 1
     floors = fileHandling(filename)[2]
     numberOfLifts = 0
+    exit = False
 
     while numberOfLifts < 1:
         numberOfLifts = int(input(f"How many lifts would you like in your {floors} story building?\n"))
     lifts = lift_setup(numberOfLifts = numberOfLifts)
 
     print_requests()
-    while numofrequests != 0:
+    while numofrequests != 0 and not exit:
+        exit = False
         for lift in lifts:
             if not lift.checkNoRequests():
                 switch = False
@@ -257,7 +261,7 @@ def look():
                     print(f"\nAdding People to Lift {lift.get_liftNumber()} ...\n")
                     print_requests()
                     print(lift)
-                    pause = input("\nType 'l' to See All Lift Information\nPress Enter to continue.\n")
+                    pause = input("\nType 'l' to See All Lift Information.\nPress Enter to continue.\n")
                     if pause.lower() == "l":
                         for lift in lifts:
                             print(lift)
@@ -279,7 +283,7 @@ def look():
                 print(f"\nRemoving People from Lift {lift.get_liftNumber()} ...\n")
                 print_requests()
                 print(lift)
-                pause = input("\nType 'l' to See All Lift Information\nPress Enter to continue.\n")
+                pause = input("\nType 'l' to See All Lift Information.\nPress Enter to continue.\n")
                 if pause.lower() == "l":
                     for lift in lifts:
                         print(lift)
@@ -287,13 +291,16 @@ def look():
             else:
                 pause = ""
                 print(f"\nLift {lift.get_liftNumber()} has no requests.\n")
-                pause = input("\nType 'b' to See All Requests.\nType 'l' to See All Lift Information\nPress Enter to continue.\n")
+                pause = input("\nType 'b' to See All Requests.\nType 'l' to See All Lift Information.\nType 'e' to Exit.\nPress Enter to continue.\n")
                 if pause.lower() == "b":
                     print_requests()
                 if pause.lower() == "l":
                     for lift in lifts:
                         print(lift)
-                pause = input("\nPress Enter to continue.\n")
+                if pause.lower() == "e":
+                    exit = True
+                else:
+                    pause = input("\nPress Enter to continue.\n")
 
             print("\n----------------------------------------\n")
 
@@ -303,7 +310,9 @@ def look():
             for x in requests:
                 numofrequests += len(x)
 
-    print("\nSimulation Finished\n")
-
+    pause = input("\nSimulation Finished\nType 'r' to Restart.\nPress Enter to Exit.\n")
+    if pause.lower() == "r":
+        look()
+    
 if __name__ == "__main__":
     look()
