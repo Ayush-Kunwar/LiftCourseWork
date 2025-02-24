@@ -125,12 +125,12 @@ class Lift:
     def checkAhead(self) -> bool: 
         """Check if there are valid requests ahead in the current direction"""
         if self.direction == "up":
-            for x in range(self.currentFloor + 1, self.topFloor):
+            for x in range(self.currentFloor + 1, self.topFloor + 1):
                 if requests[x - 1]:
                     return True
             return False
         elif self.direction == "down":
-            for x in range(self.currentFloor - 1, self.bottomFloor, -1):
+            for x in range(self.currentFloor - 1, self.bottomFloor - 1, -1):
                 if requests[x - 1]:
                     return True
             return False
@@ -140,10 +140,10 @@ class Lift:
         if self.numberOfPeople != 0:
             return False
         
-        for x in range(self.currentFloor + 1, self.topFloor): #Checks if they are any requests above the lift
+        for x in range(self.currentFloor + 1, self.topFloor + 1): #Checks if they are any requests above the lift
             if requests[x - 1]:
                 return False
-        for x in range(self.currentFloor - 1, self.bottomFloor, -1): #Checks if they are any requests below the lift
+        for x in range(self.currentFloor - 1, self.bottomFloor - 1, -1): #Checks if they are any requests below the lift
             if requests[x - 1]:
                 return False
             
@@ -152,12 +152,12 @@ class Lift:
                 for person in requests[self.currentFloor - 1]: #Checks if there are any requests to go down from Top
                     if person.get_direction() == "down":
                         return False
-                        
+                    
             elif self.checkBottom():
                 for person in requests[self.currentFloor - 1]: #Checks if there are any requests to go up from Bottom
                     if person.get_direction() == "up":
                         return False
-                        
+                    
         else:
             if requests[self.currentFloor - 1]: #Checks if there are any people on curretn floor (not top or bottom)
                 return False
@@ -257,8 +257,11 @@ def look():
                     print(f"\nAdding People to Lift {lift.get_liftNumber()} ...\n")
                     print_requests()
                     print(lift)
-                    pause = input("\nPress Enter to continue.\n")
-
+                    pause = input("\nType 'l' to See All Lift Information\nPress Enter to continue.\n")
+                    if pause.lower() == "l":
+                        for lift in lifts:
+                            print(lift)
+                
                 if ((lift.get_number_of_people() == 0 and not lift.checkAhead()) or lift.checkEnd()):
                     switch = True
 
@@ -275,24 +278,29 @@ def look():
                 print(f"\nRemoving People from Lift {lift.get_liftNumber()} ...\n")
                 print_requests()
                 print(lift)
-                pause = input("\nPress Enter to continue.\n")
-                
+                pause = input("\nType 'l' to See All Lift Information\nPress Enter to continue.\n")
+                if pause.lower() == "l":
+                    for lift in lifts:
+                        print(lift)
             else:
                 pause = ""
                 print(f"\nLift {lift.get_liftNumber()} has no requests.\n")
-                pause = input("\nType 'b' to See All Requests.\nPress Enter to continue.\n")
+                pause = input("\nType 'b' to See All Requests.\nType 'l' to See All Lift Information\nPress Enter to continue.\n")
                 if pause.lower() == "b":
                     print_requests()
-                    
-            print("----------------------------------------")
-            
+                if pause.lower() == "l":
+                    for lift in lifts:
+                        print(lift)
+
+            print("\n----------------------------------------\n")
+
             numofrequests = 0
             for lift in lifts:
                 numofrequests += lift.get_number_of_people()
             for x in requests:
                 numofrequests += len(x)
-                
+
     print("\nSimulation Finished\n")
-    
+
 if __name__ == "__main__":
     look()
