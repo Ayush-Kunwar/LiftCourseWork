@@ -196,6 +196,16 @@ class Lift:
             elif self.direction == "down":
                 self.currentFloor -= 1
 
+    def move_lift_scan(self):
+        """Moves lift by one floor"""
+        if self.checkEnd():
+            self.change_direction()
+        else:
+            if self.direction == "up":
+                self.currentFloor += 1
+            elif self.direction == "down":
+                self.currentFloor -= 1
+
     def int_peopleLift(self):
         """Represents the people in the lift as their destination floor in an array"""
         numPeople = []
@@ -268,7 +278,7 @@ def scan():
             switch = True
         else:
             switch = False
-        lift.move_lift()
+        lift.move_lift_scan()
         if not switch:
             print(f"\nMoving Lift {lift.get_liftNumber()} ...\n")
         elif switch:
