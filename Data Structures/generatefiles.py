@@ -16,16 +16,17 @@ def generateInput(name, floors, capacity, totalRequests):
         if destination != floor:  # Make sure the request is valid
             exRequests[floor - 1] += 1  # Increment the amount of requests to be placed on that floor
             remRequests -= 1      
-
+    print(remRequests)
+    print(exRequests)
     # Put requests in the file
     for floor in range(1, floors + 1):
         if exRequests[floor - 1] > 0:
-            destinations = set() # Make sure no duplicates
+            destinations = [] # Make sure no duplicates
             for i in range(exRequests[floor - 1]):
                 destination = random.randint(1, floors)
                 while destination == floor: # Reroll request if invalid
                     destination = random.randint(1, floors) 
-                destinations.add(destination)
+                destinations.append(destination)
             if floor == 1:   # Ensure theres no blank lines in file
                 file.write(f"{floor}: {', '.join(map(str, destinations))}")
             else:
