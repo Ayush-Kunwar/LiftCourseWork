@@ -1,0 +1,6 @@
+organised all code into seperate files, removed global variables, added basic user input for size and which algorithm
+
+todo:
+needs commenting
+needs to add an auto version of algorithms instead of usere clicking enter
+need timer
