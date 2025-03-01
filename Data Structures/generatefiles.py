@@ -41,6 +41,6 @@ def generateInput(name, floors, capacity, totalRequests):
 
     file.close()
 
-generateInput("in1.txt", floors=10, capacity=4, totalRequests=20)
-generateInput("in2.txt", floors=15, capacity=7, totalRequests=30)
-generateInput("in3.txt", floors=20, capacity=8, totalRequests=40)
+generateInput("input1.txt", floors=10, capacity=4, totalRequests=20)
+generateInput("input2.txt", floors=15, capacity=7, totalRequests=30)
+generateInput("input3.txt", floors=20, capacity=8, totalRequests=40)
