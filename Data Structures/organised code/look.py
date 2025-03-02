@@ -30,6 +30,8 @@ def look(filename):
 
             """Moves the lift/Change direction of the lift"""
             lift.move_lift(requests)
+            lift.update_waiting_times(requests) 
+            lift.update_travel_times()
             if not switch:
                 print(f"\nMoving Lift {lift.get_liftNumber()} ...\n")
             elif switch:
@@ -57,9 +59,14 @@ def look(filename):
         numofrequests = 0
         numofrequests += lift.get_number_of_people()
         passes += 1
+        
+
         for x in requests:
             numofrequests += len(x)
-
+        
+    lift.statistics.generate_statistics()
+    lift.statistics.plot_statistics()
     print("Passes: ", passes)
     print("\n\033[1mSimulation Finished\n\033[0m")
 
+look("input1.txt")
