@@ -1,3 +1,5 @@
+from statistics_1 import Statistics
+
 class Lift:
     def __init__(self, liftNumber: int, topFloor: int, capacity: int, bottomFloor: int = 1, currentState = "add"):
         self.liftNumber = liftNumber
@@ -9,6 +11,7 @@ class Lift:
         self.bottomFloor = bottomFloor
         self.topFloor = topFloor
         self.state = currentState
+        self.statistics = Statistics()  # Link statistics to the lift
 
     def get_liftNumber(self) -> int:
         """Returns lift number"""
@@ -17,6 +20,8 @@ class Lift:
     def get_direction(self) -> str:
         """Returns direction the lift is traveling in"""
         return self.direction
+    def set_direction(self, direction: int):
+        self.direction = direction
     
     def get_number_of_people(self) -> int:
         """Returns current capacity of the lift"""
@@ -27,8 +32,12 @@ class Lift:
         return self.state
     
     def set_state(self, state: str):
-        self.state = state
-        
+        """Set current state of lift """
+        self.state = state 
+    
+    def set_floor(self, floor: int):
+        self.currentFloor = floor
+
     def check_if_full(self) -> bool:
         """Checks if lift is full"""
         if self.numberOfPeople == self.capacity:
@@ -48,6 +57,9 @@ class Lift:
                     self.peopleLift.append(person)
                     removingPeople.append(person)
                     self.numberOfPeople += 1
+
+                    self.statistics.record_wait_time(person.wait_time)
+                    print(f"Recorded wait time for person at floor {person.startFloor} with wait time {person.get_wait_time()}")  # Debug statement
         for person in removingPeople:
             requests[self.currentFloor - 1].remove(person)
         
@@ -71,6 +83,7 @@ class Lift:
             if person.get_end_floor() == self.currentFloor:
                 addingRequest.append(person)
                 self.numberOfPeople -= 1
+                self.statistics.record_travel_time(person.travel_time)
             elif self.checkEnd():
                 addingRequest.append(person)
                 requests[self.currentFloor - 1].append(person)
@@ -155,6 +168,8 @@ class Lift:
                 self.currentFloor += 1
             elif self.direction == "down":
                 self.currentFloor -= 1
+            self.statistics.record_lift_movement()  # Track movement
+            self.statistics.record_lift_utilization(self.numberOfPeople, self.capacity)
 
     def move_lift_scan(self):
         """Moves lift by one floor"""
@@ -172,7 +187,20 @@ class Lift:
         for person in self.peopleLift:
             numPeople.append(person.get_end_floor())
         return numPeople
+    
+    def update_waiting_times(self, requests):
+        """Increment wait times only for passengers who have arrived but not entered the lift."""
+        for floor_requests in requests:
+            for person in floor_requests:
+                if person not in self.peopleLift:  # Only increment if not yet in the lift
+                    person.increment_wait_time()
+        
 
+
+    def update_travel_times(self):
+        """Increment travel times for people inside the lift."""
+        for person in self.peopleLift:
+            person.increment_travel_time()
     def __repr__(self) -> str:
         """Returns a string representation of the Lift object"""
         return (f"\n\033[1m\033[4mLift {self.liftNumber} Information\033[0m"

@@ -2,40 +2,64 @@ from fileHandling import fileHandling
 from request import loadRequests, print_requests
 from lift import Lift
 
+def validate_int(prompt: str, min: int, max: int):
+    """Prompt user for an integer within a valid range."""
+    while True:
+        try:
+            value = int(input(prompt))
+            if min <= value <= max:
+                return value
+            else:
+                print(f"Error: Please enter a number between {min} and {max}.")
+        except ValueError:
+            print("Error: Invalid input. Please enter a valid integer.")
+
+def validate_direction(prompt: str):
+    """Prompt user for a valid lift direction (up or down)."""
+    while True:
+        direction = input(prompt).strip().lower()
+        if direction == "u":
+            return "up"
+        elif direction == "d":
+            return "down"
+        print("Error: Invalid input. Type 'u' for up or 'd' for down.")
+
 
 def lift_setup(filename, numberOfLifts: int = 1):
+    """
+    Initializes the lift system based on user input.
+    - Handles multiple lifts or a single lift.
+    - Ensures valid floor limits, initial floor, and direction.
+    """
     lifts = []
-    capacity = fileHandling(filename)[1]
-    floors = fileHandling(filename)[2]
-    invalid = False
-    topfloor = None
-    bottomFloor = None
+    requests, capacity, floors = fileHandling(filename)  # Load data
 
     for x in range(1, numberOfLifts + 1):
-        topfloor = None
-        bottomFloor = None
+        # For multiple lifts, set individual range limits
+        if numberOfLifts > 1:
+            print(f"\nConfiguring Lift {x}")
+            bottomFloor = validate_int(f"What is the bottom floor of Lift {x} (min: 1): ", 1, floors - 1)
+            topfloor = validate_int(f"What is the top floor of Lift {x} (max: {floors}): ", bottomFloor + 1, floors)
+        else:
+            # Single lift should serve all floors
+            bottomFloor, topfloor = 1, floors
 
-        while invalid or topfloor == None or bottomFloor >= topfloor:
-            invalid = False
-            topfloor = None
-            bottomFloor = None
+        # Get the starting floor and direction
+        currentFloor = validate_int(f"\nWhat is the starting floor of Lift {x}: ", bottomFloor, topfloor)
+        currentDirection = validate_direction(f"\nWhat is the current direction of Lift {x} (Type 'u' for up and 'd' for down): ")
 
-            bottomFloor= int(input(f"\nWhat is the bottom floor of Lift {x} (min: 1): "))
-            topfloor = int(input(f"What is the top floor of Lift {x} (max: {floors}): "))
-
-            if bottomFloor >= topfloor or topfloor > floors or bottomFloor < 1:
-                print("\nInputs are Invalid.\n")
-                invalid = True
-    
-        lift = Lift(liftNumber = x, topFloor = topfloor, capacity = capacity, bottomFloor = bottomFloor)
+        # Create and configure the lift
+        lift = Lift(liftNumber=x, topFloor=topfloor, capacity=capacity, bottomFloor=bottomFloor)
+        lift.set_floor(currentFloor)
+        lift.set_direction(currentDirection)
         lifts.append(lift)
 
     return lifts
 
 def customLift(filename):
+    requests, capacity, floors = fileHandling(filename) 
     requests = loadRequests(filename)
     numofrequests = 1
-    floors = fileHandling(filename)[2]
     numberOfLifts = 0
     exit = False
     passes = 0
@@ -49,7 +73,9 @@ def customLift(filename):
     while numofrequests != 0 and not exit:
         exit = False
         noRemove = False
+        trackedMove = False
         for lift in lifts:
+             # Track correct waiting times
             """Removes people from the lift"""
             if lift.get_state() == "remove": #remove only if there are people to remove 
                 noRemove = False
@@ -86,6 +112,11 @@ def customLift(filename):
                     print(f"\n\033[1mMoving Lift {lift.get_liftNumber()} ...\033[0m\n")
                     print(lift)
                     lift.set_state("remove")
+                if not trackedMove:
+                    trackedMove = True
+                    lift.update_waiting_times(requests) 
+                    lift.update_travel_times()   
+
                 
                 """Adds people to the lift"""
             if lift.get_state() == "add": #add only if there are people to add
@@ -98,6 +129,10 @@ def customLift(filename):
                     lift.set_state("move")
                 elif noRemove or passes == 0: #moving lift if the lift doesn't add or remove people
                     lift.move_lift(requests)
+                    if not trackedMove:
+                        trackedMove = True
+                        lift.update_waiting_times(requests) 
+                        lift.update_travel_times()     
                     print(f"\n\033[1mMoving Lift {lift.get_liftNumber()} ...\033[0m\n")
                     print(lift)
                     lift.set_state("remove")
@@ -136,6 +171,8 @@ def customLift(filename):
                 elif pause.lower() == "e":
                     exit = True
 
+      
+
 
         print("\n\033[1m----------------------------------------\033[0m\n") #1 time has passed
         passes += 1
@@ -145,6 +182,11 @@ def customLift(filename):
             numofrequests += lift.get_number_of_people()
         for x in requests:
             numofrequests += len(x)
-
+    
+    for lift in lifts:
+        lift.statistics.generate_statistics()
+        lift.statistics.plot_statistics()
     print("Passes: ", passes)
-    pause = input("\n\033[1mSimulation Finished\nType 'r' to Restart.\nPress Enter to Exit.\033[0m\n")
+    pause = input("\n\033[1mSimulation Finished\nPress Enter to Exit.\033[0m\n")
+
+customLift("input1.txt")

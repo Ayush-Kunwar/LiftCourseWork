@@ -18,7 +18,7 @@ def getSize(size):
 if __name__ == "__main__":
     userInput = input("What lift progrom should run (scan, look, custom): ")
     inputSize = input("What size (small, medium, large, custom): ")
-    if inputSize == "custom":
+    if inputSize == "custom": #custom input generated a new random file 
         floors = int(input("Enter number of floors: "))
         capacity = int(input("Enter lift capacity: "))
         requests = int(input("Enter number of request: "))
@@ -33,3 +33,5 @@ if __name__ == "__main__":
             look(file)
         elif userInput.lower() == "custom":
             customLift(file)
+        else:
+            print("invalid size entered")
