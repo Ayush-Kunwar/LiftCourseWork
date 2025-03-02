@@ -25,6 +25,8 @@ def scan(filename):
         else:
             switch = False
         lift.move_lift_scan()
+        lift.update_waiting_times(requests) 
+        lift.update_travel_times()   
         if not switch:
             print(f"\nMoving Lift {lift.get_liftNumber()} ...\n")
         elif switch:
@@ -39,11 +41,14 @@ def scan(filename):
         pause = input("\nPress Enter to continue.\n")
         print("\n\033[1m----------------------------------------\033[0m\n") #1 time has passed
         passes += 1
+    
 
         numofrequests = 0
         numofrequests += lift.get_number_of_people()
         for x in requests:
             numofrequests += len(x)
-
+    lift.statistics.generate_statistics()
+    lift.statistics.plot_statistics()
     print("Passes: ", passes)
     print("\n\033[1mSimulation Finished\n\033[0m")
+scan("input1.txt")
