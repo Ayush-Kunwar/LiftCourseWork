@@ -1,6 +1,7 @@
 from scan import scan
 from look import look
 from multipleLifts import customLift
+from generatefiles import generateInput
 
 def getSize(size):
     if size == "small":
@@ -15,9 +16,16 @@ def getSize(size):
     return file
 
 if __name__ == "__main__":
-    userInput = input("What lift progrom should run: ")
-    inputSize = input("What size (small, medium, large): ")
-    file = getSize(inputSize)
+    userInput = input("What lift progrom should run (scan, look, custom): ")
+    inputSize = input("What size (small, medium, large, custom): ")
+    if inputSize == "custom":
+        floors = int(input("Enter number of floors: "))
+        capacity = int(input("Enter lift capacity: "))
+        requests = int(input("Enter number of request: "))
+        generateInput("input4.txt", floors, capacity, requests)
+        file = "input4.txt"
+    else:
+        file = getSize(inputSize)
     if file:
         if userInput.lower() == "scan":
             scan(file)
